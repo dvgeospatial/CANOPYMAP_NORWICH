@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <!-- Accessible, responsive viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Norwich 3D Terrain & Watershed Crowns</title>
 
   <!-- Mapbox GL JS -->
@@ -25,10 +26,12 @@
       overflow: hidden;
       grid-template-columns: 1fr 320px;
       grid-template-rows: 60px 1fr;
-      grid-template-areas: "header header" "map sidebar";
+      grid-template-areas:
+        "header header"
+        "map sidebar";
     }
 
-    /* Sidebar hidden by default */
+    /* Sidebar closed (desktop baseline) */
     .app-container.sidebar-closed {
       grid-template-columns: 1fr 0;
     }
@@ -194,23 +197,75 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.3);
     }
 
-.layers-toggle-button {
-  width: 30px;
-  height: 30px;
-  background-color: #fff;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 26px 26px;
-  /* Use the standard Leaflet layers icon */
-  background-image: url('https://unpkg.com/leaflet@1.9.4/dist/images/layers.png');
-}
+    .layers-toggle-button {
+      width: 30px;
+      height: 30px;
+      background-color: #fff;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 26px 26px;
+      /* Use the standard Leaflet layers icon */
+      background-image: url('https://unpkg.com/leaflet@1.9.4/dist/images/layers.png');
+    }
+
+    /* --------- RESPONSIVE LAYOUT --------- */
+
+    @media (max-width: 768px) {
+      .app-container {
+        /* Stack header, map, sidebar */
+        grid-template-columns: 1fr;
+        grid-template-rows: 60px auto auto;
+        grid-template-areas:
+          "header"
+          "map"
+          "sidebar";
+      }
+
+      /* When sidebar is closed on mobile, hide it cleanly
+         but keep map full width/height under header */
+      .app-container.sidebar-closed {
+        grid-template-rows: 60px auto 0;
+      }
+      .app-container.sidebar-closed .sidebar {
+        display: none;
+      }
+
+      .header-bar {
+        padding: 0 12px;
+      }
+
+      #app-header-title {
+        font-size: 18px;
+      }
+
+      .sidebar {
+        border-left: none;
+        border-top: 1px solid #d9d9d9;
+        max-height: 40vh; /* avoid covering the whole screen */
+      }
+
+      .sidebar-content {
+        padding: 12px;
+      }
+
+      .layer-row {
+        font-size: 16px;
+        padding: 6px 0;
+      }
+
+      .expand-map-button {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <!-- Start with sidebar closed so mobile sees full map initially -->
   <div class="app-container sidebar-closed">
     <!-- Header Area -->
     <header class="header-bar" id="app-header-bar">
@@ -221,7 +276,7 @@
       </div>
 
       <div class="header-zone header-zone-right">
-        <!-- New pop-out button -->
+        <!-- Pop-out button -->
         <button class="expand-map-button" type="button" onclick="toggleParentExpansion()">
           Pop out map
         </button>
@@ -298,6 +353,7 @@
 
     const INITIAL_CENTER = [1.2974, 52.6293]; // Norwich coords
     const INITIAL_ZOOM = 15;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     const map = new mapboxgl.Map({
       container: 'map',
@@ -325,7 +381,7 @@
       },
       center: INITIAL_CENTER,
       zoom: INITIAL_ZOOM,
-      pitch: 60,
+      pitch: isMobile ? 45 : 60,
       bearing: 0,
       projection: 'globe'
     });
