@@ -233,12 +233,37 @@
         display: none;
       }
 
+      /* Header: stack and center content so right-side controls stay in view */
       .header-bar {
-        padding: 0 12px;
+        padding: 0 8px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+          "center"
+          "right";
+        gap: 8px;
+        justify-items: center;
+      }
+
+      .header-zone-left {
+        display: none;
+      }
+
+      .header-zone-center {
+        grid-area: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .header-zone-right {
+        grid-area: right;
+        justify-content: center;
       }
 
       #app-header-title {
         font-size: 18px;
+        text-align: center;
+        white-space: normal; /* allow wrapping instead of clipping */
       }
 
       .sidebar {
@@ -386,7 +411,11 @@
       projection: 'globe'
     });
 
-    map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
+    // Navigation control: move to top-left on mobile to reduce crowding on the right
+    map.addControl(
+      new mapboxgl.NavigationControl({ visualizePitch: true }),
+      isMobile ? 'top-left' : 'top-right'
+    );
     map.addControl(new mapboxgl.ScaleControl(), 'bottom-left');
 
     // Custom control to toggle sidebar visibility (layers panel)
