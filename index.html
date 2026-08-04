@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Norwich 3D Terrain & Watershed Crowns</title>
 
   <!-- Mapbox GL JS -->
@@ -10,8 +11,13 @@
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
     .app-container {
       display: grid;
       height: 100dvh;
@@ -21,7 +27,7 @@
       grid-template-rows: 60px 1fr;
       grid-template-areas: "header header" "map sidebar";
     }
-    
+
     .header-bar {
       grid-area: header;
       background-color: #19606b;
@@ -32,12 +38,17 @@
       padding: 0 20px;
       z-index: 1000;
     }
-    
-    .header-zone { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+    .header-zone {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
     .header-zone-left { justify-content: flex-start; }
     .header-zone-center { justify-content: center; text-align: center; min-width: 0; }
     .header-zone-right { justify-content: flex-end; }
-    
+
     #app-header-title {
       color: #ffffff;
       font-size: 24px;
@@ -47,21 +58,22 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .map-window {
       grid-area: map;
       position: relative;
       background-color: #e5e5e5;
     }
-    
-    /* Ensure the Mapbox canvas fills the container */
-    #map { width: 100%; height: 100%; }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
 
     .sidebar {
       grid-area: sidebar;
       background-color: #f2f2f2;
       border-left: 1px solid #d9d9d9;
-      /* Set up flex so footer docks at bottom while content scrolls */
       display: flex;
       flex-direction: column;
       z-index: 500;
@@ -77,19 +89,47 @@
       gap: 20px;
     }
 
-    /* Controls styling adapted for the sidebar */
     .layer-group { margin-bottom: 20px; }
-    .layer-group-title { font-size: 18px; font-weight: 700; color: #2f2f2f; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #d9d9d9; }
-    .layer-group-items { display: flex; flex-direction: column; gap: 12px; }
-    
-    .layer-row { display: flex; align-items: center; font-size: 14px; cursor: pointer; color: #333; }
-    .layer-row input[type="checkbox"] { margin-right: 10px; cursor: pointer; accent-color: #333; }
+    .layer-group-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2f2f2f;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #d9d9d9;
+    }
+    .layer-group-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      color: #333;
+    }
+    .layer-row input[type="checkbox"] {
+      margin-right: 10px;
+      cursor: pointer;
+      accent-color: #333;
+    }
 
     .slider-container { display: flex; flex-direction: column; gap: 6px; }
-    .slider-container label { font-size: 13px; font-weight: 600; color: #4a4a4a; }
-    input[type=range] { width: 100%; cursor: pointer; accent-color: #111; }
+    .slider-container label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4a4a4a;
+    }
+    input[type=range] {
+      width: 100%;
+      cursor: pointer;
+      accent-color: #111;
+    }
 
-    /* EXACT Wisefrog Footer Extracted from Target Code */
+    /* Wisefrog Footer */
     #wisefrog-footer {
       display: flex;
       align-items: center;
@@ -120,6 +160,25 @@
     #wisefrog-footer:hover span { opacity: 0.85; }
     #wisefrog-footer:hover img { opacity: 1; }
 
+    /* Pop-out button styling */
+    .expand-map-button {
+      padding: 6px 12px;
+      border-radius: 9999px;
+      border: none;
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+    .expand-map-button:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
@@ -128,10 +187,17 @@
     <!-- Header Area -->
     <header class="header-bar" id="app-header-bar">
       <div class="header-zone header-zone-left"></div>
+
       <div class="header-zone header-zone-center">
         <h2 id="app-header-title">canopyMap by Wisefrog; Norwich tree cover</h2>
       </div>
-      <div class="header-zone header-zone-right"></div>
+
+      <div class="header-zone header-zone-right">
+        <!-- New pop-out button -->
+        <button class="expand-map-button" type="button" onclick="toggleParentExpansion()">
+          Pop out map
+        </button>
+      </div>
     </header>
 
     <!-- Map Area -->
@@ -141,28 +207,27 @@
 
     <!-- Sidebar Area -->
     <aside class="sidebar" id="app-sidebar">
-      
-      <!-- Scrollable Sidebar Content -->
       <div class="sidebar-content">
         <div class="layer-group">
           <h3 class="layer-group-title">Map Layers</h3>
           <div class="layer-group-items">
-            
             <div class="layer-row">
-              <input type="checkbox" id="chkCrowns" checked onchange="toggleLayer('crowns-extrusion', this.checked); toggleLayer('crowns-outline', this.checked)">
+              <input type="checkbox" id="chkCrowns" checked
+                     onchange="toggleLayer('crowns-extrusion', this.checked); toggleLayer('crowns-outline', this.checked)">
               <label for="chkCrowns">canopyMap</label>
             </div>
-            
+
             <div class="layer-row">
-              <input type="checkbox" id="chkBuildings" checked onchange="toggleLayer('3d-buildings', this.checked)">
+              <input type="checkbox" id="chkBuildings" checked
+                     onchange="toggleLayer('3d-buildings', this.checked)">
               <label for="chkBuildings">3D Buildings</label>
             </div>
-            
+
             <div class="layer-row">
-              <input type="checkbox" id="chkSatellite" onchange="toggleLayer('satellite-layer', this.checked)">
+              <input type="checkbox" id="chkSatellite"
+                     onchange="toggleLayer('satellite-layer', this.checked)">
               <label for="chkSatellite">Satellite</label>
             </div>
-
           </div>
         </div>
 
@@ -170,25 +235,37 @@
           <h3 class="layer-group-title">Terrain Settings</h3>
           <div class="layer-group-items">
             <div class="slider-container">
-              <label for="exaggeration">Terrain Exaggeration: <span id="exagValue">2.0</span>x</label>
+              <label for="exaggeration">
+                Terrain Exaggeration: <span id="exagValue">2.0</span>x
+              </label>
               <input id="exaggeration" type="range" min="0" max="10" step="0.1" value="2" />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Wisefrog Footer (Docked at bottom) -->
       <div id="wisefrog-footer">
-          <span>smart mapping by wisefrog</span>
-          <a href="https://www.wisefrog.co.uk" target="_blank" rel="noopener noreferrer" aria-label="Wise Frog Limited">
-              <img src="https://tourmaline-pudding-0fce6c.netlify.app/assets/logos/frog_best.svg" alt="WiseFrog logo">
-          </a>
+        <span>smart mapping by wisefrog</span>
+        <a href="https://www.wisefrog.co.uk"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="Wise Frog Limited">
+          <img src="https://tourmaline-pudding-0fce6c.netlify.app/assets/logos/frog_best.svg"
+               alt="WiseFrog logo">
+        </a>
       </div>
-
     </aside>
   </div>
 
   <script>
+    // Pop-out integration with parent (Eleventy portfolio layout)
+    function toggleParentExpansion() {
+      // Only attempt if this app is inside an iframe with a parent
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'toggleMapExpansion' }, '*');
+      }
+    }
+
     mapboxgl.accessToken = 'pk.eyJ1Ijoid2lzZWZyb2dtYXBib3giLCJhIjoiY21zZWp6MHQwMDEwcDJ3c2Zuemt3b3JxaCJ9.cQdNn0RvFCAAGriAH9bGTQ';
 
     const INITIAL_CENTER = [1.2974, 52.6293]; // Norwich coords
@@ -267,15 +344,16 @@
         });
 
         map.addLayer({
-          'id': '3d-buildings',
-          'source': 'mapbox-streets',
+          id: '3d-buildings',
+          source: 'mapbox-streets',
           'source-layer': 'building',
-          'filter': ['==', 'extrude', 'true'],
-          'type': 'fill-extrusion',
-          'minzoom': 14,
-          'layout': { visibility: 'visible' },
-          'paint': {
+          filter: ['==', 'extrude', 'true'],
+          type: 'fill-extrusion',
+          minzoom: 14,
+          layout: { visibility: 'visible' },
+          paint: {
             'fill-extrusion-color': '#e5e5e5',
+            'fill-extrusion-opacity': 0.7,
             'fill-extrusion-height': [
               'interpolate',
               ['linear'],
@@ -289,8 +367,7 @@
               ['zoom'],
               14, 0,
               14.05, ['get', 'min_height']
-            ],
-            'fill-extrusion-opacity': 0.7
+            ]
           }
         });
 
@@ -315,7 +392,7 @@
                 ['to-number', ['get', 'max_height']],
                 5
               ],
-              0.5 
+              0.5
             ],
             'fill-extrusion-base': 0
           }
@@ -341,9 +418,12 @@
             .addTo(map);
         });
 
-        map.on('mouseenter', 'crowns-extrusion', () => { map.getCanvas().style.cursor = 'pointer'; });
-        map.on('mouseleave', 'crowns-extrusion', () => { map.getCanvas().style.cursor = ''; });
-
+        map.on('mouseenter', 'crowns-extrusion', () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'crowns-extrusion', () => {
+          map.getCanvas().style.cursor = '';
+        });
       } catch (err) {
         console.error("Map load error:", err);
       }
