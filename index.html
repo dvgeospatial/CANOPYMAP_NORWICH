@@ -28,6 +28,15 @@
       grid-template-areas: "header header" "map sidebar";
     }
 
+    /* Sidebar hidden by default */
+    .app-container.sidebar-closed {
+      grid-template-columns: 1fr 0;
+    }
+
+    .app-container.sidebar-closed .sidebar {
+      display: none;
+    }
+
     .header-bar {
       grid-area: header;
       background-color: #19606b;
@@ -179,11 +188,30 @@
       background-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-1px);
     }
+
+    /* Custom layers control styled like Leaflet's layers icon */
+    .mapboxgl-ctrl.layers-toggle-ctrl {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+.layers-toggle-button {
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 26px 26px;
+  /* Use the standard Leaflet layers icon */
+  background-image: url('https://unpkg.com/leaflet@1.9.4/dist/images/layers.png');
+}
   </style>
 </head>
 <body>
 
-  <div class="app-container">
+  <div class="app-container sidebar-closed">
     <!-- Header Area -->
     <header class="header-bar" id="app-header-bar">
       <div class="header-zone header-zone-left"></div>
@@ -304,6 +332,37 @@
 
     map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
     map.addControl(new mapboxgl.ScaleControl(), 'bottom-left');
+
+    // Custom control to toggle sidebar visibility (layers panel)
+    class LayersToggleControl {
+      onAdd(map) {
+        this._map = map;
+        const container = document.createElement('div');
+        container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group layers-toggle-ctrl';
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'layers-toggle-button';
+        button.title = 'Map layers';
+
+        button.addEventListener('click', () => {
+          const appContainer = document.querySelector('.app-container');
+          appContainer.classList.toggle('sidebar-closed');
+          // Ensure the map resizes correctly when the grid changes
+          map.resize();
+        });
+
+        container.appendChild(button);
+        return container;
+      }
+
+      onRemove() {
+        this._map = undefined;
+      }
+    }
+
+    // Add the layers toggle control to the top-right
+    map.addControl(new LayersToggleControl(), 'top-right');
 
     map.on('load', () => {
       try {
