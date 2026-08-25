@@ -13,14 +13,25 @@
     .map-window { flex: 1; position: relative; background: #e5e5e5; overflow: hidden; }
     #map { width: 100%; height: 100%; }
 
+    /* Mapbox top right controls */
+    .mapboxgl-ctrl-top-right {
+      top: 10px;
+      right: 10px;
+      z-index: 1005;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
     .brand-logo-container {
       position: fixed;
       top: 14px;
       left: 14px;
       z-index: 2000;
-      pointer-events: none;
+      pointer-events: auto;
       display: flex;
       align-items: center;
+      cursor: pointer;
     }
     .brand-logo {
       height: clamp(60px, 14vw, 288px);
@@ -31,6 +42,152 @@
       filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
       user-select: none;
       -webkit-user-select: none;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .brand-logo-container:hover .brand-logo {
+      transform: scale(1.02);
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+    }
+    .brand-logo-container:active .brand-logo {
+      transform: scale(0.98);
+    }
+
+    /* Help button control override to enforce solid #ff6a22 background */
+    .mapboxgl-ctrl-group.help-control-group {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      margin-top: 10px !important;
+    }
+    button.help-btn {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 29px !important;
+      height: 29px !important;
+      min-width: 29px !important;
+      padding: 0 !important;
+      border-radius: 5px !important;
+      border: 1px solid #ff6a22 !important;
+      background-color: #ff6a22 !important;
+      background: #ff6a22 !important;
+      color: #ffffff !important;
+      cursor: pointer !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      line-height: 1 !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease !important;
+      user-select: none !important;
+      outline: none !important;
+    }
+    button.help-btn:hover {
+      background-color: #e55a15 !important;
+      background: #e55a15 !important;
+      border-color: #e55a15 !important;
+      transform: scale(1.05) !important;
+    }
+    button.help-btn:active {
+      transform: scale(0.95) !important;
+    }
+
+    .help-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .help-modal-overlay.open {
+      display: flex;
+    }
+    .help-modal {
+      background: #ffffff;
+      color: #1e293b;
+      width: 100%;
+      max-width: 680px;
+      max-height: min(85vh, 750px);
+      border-radius: 12px;
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.35), 0 10px 15px -5px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .help-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .help-modal-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .help-modal-close {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 24px;
+      line-height: 1;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .help-modal-close:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .help-modal-body {
+      padding: 22px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #334155;
+    }
+    .help-modal-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+    .help-modal-body h3:first-child {
+      margin-top: 0;
+    }
+    .help-modal-body p {
+      margin-bottom: 12px;
+    }
+    .help-modal-body ol, .help-modal-body ul {
+      margin-left: 20px;
+      margin-bottom: 14px;
+    }
+    .help-modal-body li {
+      margin-bottom: 8px;
+    }
+    .help-modal-body strong {
+      color: #0f172a;
     }
 
     .map-attribution {
@@ -92,14 +249,53 @@
       .wisefrog-credit img { height: 21px; }
       .temporal-btn { padding: 5px 9px; font-size: 12px; }
       .sun-compact-status { font-size: 10px; }
+      .help-modal { max-height: 90vh; }
     }
   </style>
 </head>
 <body>
   <div class="app-container">
-    <div class="brand-logo-container">
+    <div class="brand-logo-container" id="brandLogoContainer" role="button" tabindex="0" aria-label="Open Norwich Shade Map Guide">
       <img class="brand-logo" src="https://firebasestorage.googleapis.com/v0/b/naturecitynorwich.firebasestorage.app/o/Assets%2FnorwichShadeMap_logo.webp?alt=media&token=982088d8-6810-43d0-ba2b-3b53740faa8e" alt="Norwich Shade Map logo">
     </div>
+
+    <div class="help-modal-overlay" id="helpModalOverlay" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+      <div class="help-modal">
+        <div class="help-modal-header">
+          <h2 id="helpModalTitle">Norwich Shade Map Guide</h2>
+          <button class="help-modal-close" id="helpModalClose" type="button" aria-label="Close help modal">&times;</button>
+        </div>
+        <div class="help-modal-body">
+          <h3>How to Use Norwich Shade Map</h3>
+          <ol>
+            <li><strong>Change the Time of Day</strong>: Click <strong>Time</strong>, then drag the bottom slider left or right (or scroll with your mouse wheel) to watch tree and building shadows move throughout the day.</li>
+            <li><strong>Change the Season</strong>: Click <strong>Date</strong> and slide through the months to see how shadows shift between summer and winter.</li>
+            <li><strong>Daylight Hours</strong>: The bright yellow bar on the time slider shows sunrise to sunset.</li>
+            <li><strong>Return to Live</strong>: Click <strong>Now</strong> at any time to jump straight back to current real-time shade.</li>
+            <li><strong>Explore Norwich</strong>: Drag to pan, scroll to zoom, and right-click &amp; drag (or use two fingers on touch screens) to tilt and rotate the 3D map.</li>
+          </ol>
+
+          <h3>What is the Norwich Shade Map for?</h3>
+          <p>To explore the dynamic of urban shade around Norwich, Wisefrog have developed the Norwich Shade Map. This 3D interactive web map visualises how shadows cast by the built environment and tree canopies shift throughout daylight hours for every day of the year.</p>
+          <p>The tree canopy layer is a Wise Frog product named canopyMap and is derived from Environment Agency LiDAR data. This is combined with extruded OpenStreetMap building footprints and solar angles to model the shade. Wisefrog can produce canopyMap for anywhere in England.</p>
+          <p>The Norwich Shade Map has potential uses in urban planning and public health:</p>
+          <ul>
+            <li><strong>Targeting "shade deserts"</strong>: Pinpointing streets, school routes, and public spaces lacking sun protection to prioritise targeted tree planting.</li>
+            <li><strong>Assessing climate equity</strong>: Layering shade availability with demographic, age, and health vulnerability data to ensure fair access to cooler outdoor spaces.</li>
+            <li><strong>Informing urban design for active travel</strong>: Shaded pedestrian walkways and bike lanes are more attractive and comfortable to use during the summer months.</li>
+            <li><strong>Wildlife benefits</strong>: Urban shade benefits wildlife; it creates cooler, less dry microhabitats that help wildlife avoid heat stress, rest, forage and move through cities during hot weather.</li>
+          </ul>
+
+          <h3>Understanding the Sun Data</h3>
+          <p>Next to the time controls, you will see two numbers showing the sun’s exact position:</p>
+          <ul>
+            <li><strong>Height in the Sky (<code>∡</code> e.g., 54.7°)</strong>: This is the sun's elevation above the horizon. <strong>0°</strong> means the sun is right on the horizon (sunrise or sunset). Higher values mean the sun is high overhead, creating shorter, tighter shadows. Values below <strong>0°</strong> mean it is night time.</li>
+            <li><strong>Compass Direction (e.g., 195.0° SSW)</strong>: This tells you where the sun is coming from in the sky (its compass heading). Shadows always stretch directly in the opposite direction (for example, a sun in the South creates shadows pointing North).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div class="map-window">
       <div id="map"></div>
       <div class="map-attribution" aria-label="Map data attribution">
@@ -154,7 +350,6 @@
     const latitudeDelta = NAVIGATION_RADIUS_METRES / METRES_PER_DEGREE_LATITUDE;
     const longitudeDelta = NAVIGATION_RADIUS_METRES * longitudeDegreesPerMetre;
     const NORWICH_MAX_BOUNDS = [[INITIAL_CENTER[0] - longitudeDelta, INITIAL_CENTER[1] - latitudeDelta], [INITIAL_CENTER[0] + longitudeDelta, INITIAL_CENTER[1] + latitudeDelta]];
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const lighting = { azimuth: 210, polar: 45, shadowIntensity: 1.0, isDaylight: true };
     function normaliseDegrees(value) { return ((value % 360) + 360) % 360; }
     function radiansToDegrees(radians) { return radians * 180 / Math.PI; }
@@ -173,10 +368,64 @@
         sources: { osm: { type: 'raster', tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', 'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png', 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize: 256, attribution: '&copy; OpenStreetMap contributors' } },
         layers: [{ id: 'osm-base', type: 'raster', source: 'osm' }]
       },
-      center: INITIAL_CENTER, zoom: INITIAL_ZOOM, minZoom: 12, maxBounds: NORWICH_MAX_BOUNDS, pitch: isMobile ? 45 : INITIAL_PITCH, bearing: INITIAL_BEARING, projection: 'globe', attributionControl: false
+      center: INITIAL_CENTER, zoom: INITIAL_ZOOM, minZoom: 12, maxBounds: NORWICH_MAX_BOUNDS, pitch: INITIAL_PITCH, bearing: INITIAL_BEARING, projection: 'globe', attributionControl: false
     });
-    map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), isMobile ? 'top-left' : 'top-right');
+
+    map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
     map.addControl(new mapboxgl.ScaleControl(), 'bottom-left');
+
+    class HelpMapControl {
+      onAdd(mapInstance) {
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group help-control-group';
+        const btn = document.createElement('button');
+        btn.id = 'helpButton';
+        btn.className = 'help-btn';
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Open User Guide and Help');
+        btn.textContent = '?';
+        btn.addEventListener('click', () => {
+          document.getElementById('helpModalOverlay').classList.add('open');
+        });
+        this._container.appendChild(btn);
+        return this._container;
+      }
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+      }
+    }
+    map.addControl(new HelpMapControl(), 'top-right');
+
+    const brandLogoContainer = document.getElementById('brandLogoContainer');
+    const helpModalOverlay = document.getElementById('helpModalOverlay');
+    const helpModalClose = document.getElementById('helpModalClose');
+
+    function openHelpModal() {
+      helpModalOverlay.classList.add('open');
+    }
+
+    brandLogoContainer.addEventListener('click', openHelpModal);
+    brandLogoContainer.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openHelpModal();
+      }
+    });
+
+    helpModalClose.addEventListener('click', () => {
+      helpModalOverlay.classList.remove('open');
+    });
+    helpModalOverlay.addEventListener('click', (e) => {
+      if (e.target === helpModalOverlay) {
+        helpModalOverlay.classList.remove('open');
+      }
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && helpModalOverlay.classList.contains('open')) {
+        helpModalOverlay.classList.remove('open');
+      }
+    });
+
     const sunDateTimeInput = document.getElementById('sunDateTime');
     const dateControlButton = document.getElementById('dateControlButton');
     const timeControlButton = document.getElementById('timeControlButton');
@@ -187,6 +436,7 @@
     const sunAzimuthTxt = document.getElementById('sunAzimuthTxt');
     const wheelViewport = document.getElementById('wheelViewport');
     const wheelTrack = document.getElementById('wheelTrack');
+
     let temporalMode = 'date';
     let currentDate = new Date();
     let wheelDragging = false;
